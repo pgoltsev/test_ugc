@@ -1,0 +1,28 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>{{ survey.title }}</title>
+</head>
+<body>
+
+{% include 'logout_base.html' %}
+
+<h1>{{ survey.title }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {% for question in questions %}
+        <fieldset>
+            <legend>{{ question.text }}</legend>
+            {% for choice in question.choice_set.all %}
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" required>
+                    {{ choice.text }}
+                </label><br>
+            {% endfor %}
+        </fieldset>
+    {% endfor %}
+    <button type="submit">{% translate 'Отправить' %}</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>{{ survey.title }}</title>
+</head>
+<body>
+
+{% include 'logout_base.html' %}
+
+<h3>{% translate 'Ваши ответы успешно отправлены. Спасибо за участие!' %}</h3>
+</body>
+</html>

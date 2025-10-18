@@ -1,0 +1,9 @@
+<div style="text-align:right;">
+    <span>{{ request.user.username }}</span>
+    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+            Выйти
+        </button>
+    </form>
+</div>

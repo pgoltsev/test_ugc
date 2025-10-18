@@ -1,0 +1,48 @@
+services:
+  setup:
+    build:
+      dockerfile: docker/app/Dockerfile
+      context: .
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+    command: sh -c "
+      uv run python manage.py migrate &&
+      uv run python manage.py create_superuser --noinput --username=test --email=test@test.test --password=test --if-not-exists &&
+      uv run python manage.py populate_test_users --amount=100 &&
+      uv run python manage.py populate_test_surveys --amount=100 &&
+      uv run python manage.py populate_test_survey_results --amount=100
+      "
+
+  app:
+    build:
+      dockerfile: docker/app/Dockerfile
+      context: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+
+  db:
+    image: postgres:18-alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./docker/configs/db/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh:ro
+    environment:
+      - POSTGRES_DB_NAME=ugc
+      - POSTGRES_DB_USER=ugc
+      - POSTGRES_DB_PASSWORD=ugc
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5442:5432"
+    command: >
+      -c 'log_statement=all'
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db:

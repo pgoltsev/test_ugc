@@ -1,0 +1,5 @@
+*
+!src
+!manage.py
+!pyproject.toml
+!uv.lock

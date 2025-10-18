@@ -1,0 +1,24 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>{% translate 'Вопрос' %}</title>
+</head>
+<body>
+
+{% include 'logout_base.html' %}
+
+{% for question in questions %}
+    <fieldset>
+        <legend>{{ question.text }}</legend>
+        {% for choice in question.choice_set.all %}
+            <label>
+                <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" required>
+                {{ choice.text }}
+            </label><br>
+        {% endfor %}
+    </fieldset>
+{% endfor %}
+
+</body>
+</html>
