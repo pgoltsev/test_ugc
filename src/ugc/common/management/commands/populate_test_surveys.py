@@ -1,4 +1,3 @@
-import gc
 import logging
 import random
 from typing import Type, TypeVar

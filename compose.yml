@@ -11,7 +11,7 @@ services:
       uv run python manage.py create_superuser --noinput --username=test --email=test@test.test --password=test --if-not-exists &&
       uv run python manage.py populate_test_users --amount=100 &&
       uv run python manage.py populate_test_surveys --amount=100 &&
-      uv run python manage.py populate_test_survey_results --amount=100
+      uv run python manage.py populate_test_survey_results --surveys-amount=100
       "
 
   app:

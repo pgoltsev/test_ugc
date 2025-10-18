@@ -1,6 +1,6 @@
 import logging
 import random
-from math import ceil, floor
+from math import floor
 from typing import Type, TypeVar
 
 from django.contrib.auth import get_user_model
@@ -112,7 +112,7 @@ class Command(BaseCommand):
         logger.info(f'Создаем результаты ...')
 
         length: int = len(user_ids)
-        batch_size: int = options['batch_size']
+        batch_size: int = min(options['batch_size'], length)
         start_idx: int = 0
         end_idx: int
         while start_idx < length:
@@ -120,6 +120,6 @@ class Command(BaseCommand):
             user_batch: list[int] = user_ids[start_idx:end_idx]
             self._create_results(amount_per_user=5, user_ids=user_batch, surveys=surveys)
             start_idx = end_idx
-            logger.info(f'Создано {start_idx} | {floor(start_idx * 100/ length)}%')
+            logger.info(f'Создано {start_idx} | {floor(start_idx * 100 / length)}%')
 
         logger.info(f'Готово')
