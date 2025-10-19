@@ -8,21 +8,25 @@
 
 {% include 'logout_base.html' %}
 
-<h1>{{ survey.title }}</h1>
-<form method="post">
-    {% csrf_token %}
-    {% for question in questions %}
+{% if question %}
+    <h1>{{ survey.title }}</h1>
+    <form method="post">
+        {% csrf_token %}
         <fieldset>
+            <input type="hidden" name="question" value="{{ question.id }}">
             <legend>{{ question.text }}</legend>
             {% for choice in question.choice_set.all %}
                 <label>
-                    <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" required>
+                    <input type="radio" name="choice" value="{{ choice.id }}" required>
                     {{ choice.text }}
                 </label><br>
             {% endfor %}
         </fieldset>
-    {% endfor %}
-    <button type="submit">{% translate 'Отправить' %}</button>
-</form>
+        <button type="submit">{% translate 'Далее' %}</button>
+    </form>
+{% else %}
+    <h3>{% translate "Ваши ответы успешно отправлены. Спасибо за участие!" %}</h3>
+{% endif %}
+
 </body>
 </html>

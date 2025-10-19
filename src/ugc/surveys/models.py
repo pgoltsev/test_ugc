@@ -73,6 +73,9 @@ class SurveyResult(models.Model):
     class Meta:
         verbose_name = _('результат опроса')
         verbose_name_plural = _('результаты опросов')
+        indexes = [
+            models.Index(fields=['user', 'survey']),
+        ]
 
     def __str__(self):
         return f'{_('Результат опроса')} {self.id}'
