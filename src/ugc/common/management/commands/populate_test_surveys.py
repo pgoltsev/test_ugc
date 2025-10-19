@@ -1,6 +1,6 @@
 import logging
 import random
-from typing import Type, TypeVar
+from typing import Type
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -20,16 +20,22 @@ def generate_random_text(min_words_cnt: int = 5, max_words_cnt: int = 15) -> str
     return ' '.join([WORDS[random.randint(0, len(WORDS) - 1)] for _ in range(words_cnt)])
 
 
-T = TypeVar('T')
-
-
-def generate_entities(min_cnt: int, max_cnt: int, cls: Type[T], **params) -> list[T]:
-    result: list[T] = []
+def generate_questions(min_cnt: int, max_cnt: int, **params) -> list[Question]:
+    result: list[Question] = []
     cnt: int = random.randint(min_cnt, max_cnt)
-    orders: list[int] = random.sample(range(0, cnt), cnt)
+    for idx, _ in enumerate(range(cnt)):
+        text: str = f'Вопрос {idx + 1}'
+        question: Question = Question(text=text, **params)
+        result.append(question)
+    return result
+
+
+def generate_choices(min_cnt: int, max_cnt: int, **params) -> list[Choice]:
+    result: list[Choice] = []
+    cnt: int = random.randint(min_cnt, max_cnt)
     for idx, _ in enumerate(range(cnt)):
         text: str = generate_random_text()
-        entity: T = cls(text=text, order=orders[idx], **params)
+        entity: Choice = Choice(text=text, order=idx, **params)
         result.append(entity)
     return result
 
@@ -55,23 +61,32 @@ class Command(BaseCommand):
 
     @gc_collect
     def _create_surveys(self, amount: int, user_ids: list[int]):
-        surveys: list[Survey] = [
-            Survey(title=generate_random_text(), author_id=random.choice(user_ids))
-            for _ in range(amount)
-        ]
-        questions: list[Question] = []
-        choices: list[Choice] = []
-
-        for survey in surveys:
-            survey_questions: list[Question] = generate_entities(5, 15, Question, survey=survey)
-            questions.extend(survey_questions)
-
-            for question in survey_questions:
-                choices.extend(generate_entities(3, 5, Choice, question=question))
-
         with transaction.atomic():
+            surveys: list[Survey] = [
+                Survey(title=f'Заголовок опроса {idx + 1}', author_id=random.choice(user_ids))
+                for idx in range(amount)
+            ]
+            choices: list[Choice] = []
+
             Survey.objects.bulk_create(surveys)
-            Question.objects.bulk_create(questions)
+
+            for survey in surveys:
+                survey_questions: list[Question] = generate_questions(5, 15, survey=survey)
+
+                Question.objects.bulk_create(survey_questions)
+
+                survey.first_question = survey_questions[0]
+                survey.save()
+
+                next_question: Question | None = None
+                for question in survey_questions[::-1]:
+                    question.next = next_question
+                    next_question = question
+                Question.objects.bulk_update(survey_questions, fields=['next'])
+
+                for question in survey_questions:
+                    choices.extend(generate_choices(3, 5, question=question))
+
             Choice.objects.bulk_create(choices)
 
     def handle(self, *args, **options):

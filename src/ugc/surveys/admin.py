@@ -9,8 +9,9 @@ from ugc.surveys.mixins import FormWidgetMixin
 
 class QuestionInline(FormWidgetMixin, admin.TabularInline):
     model = models.Question
-    fields = ('get_question', 'text', 'order', 'created_at')
-    readonly_fields = ('get_question', 'created_at')
+    fields = ('get_id', 'get_question', 'text', 'next', 'created_at')
+    readonly_fields = ('get_id', 'get_question', 'created_at')
+    raw_id_fields = ('next',)
     extra = 0
     max_num = 15
     min_num = 1
@@ -20,13 +21,19 @@ class QuestionInline(FormWidgetMixin, admin.TabularInline):
 
     @admin.display(description=_('к вопросу'))
     def get_question(self, obj):
-        return render_admin_change_link(obj, str(_('к вопросу')))
+        return render_admin_change_link(obj, str(_('к вопросу'))) if obj else ''
+
+    @admin.display(description=_('id'))
+    def get_id(self, obj):
+        return obj.id if obj.id else '-'
 
 
 @admin.register(models.Survey)
 class SurveyAdmin(admin.ModelAdmin):
+    fields = ('title', 'author', 'first_question', 'created_at')
     list_display = ('title', 'author', 'created_at')
     readonly_fields = ('created_at', 'author')
+    raw_id_fields = ('first_question',)
     inlines = (QuestionInline,)
 
     def save_model(self, request, obj: models.Survey, form, change):

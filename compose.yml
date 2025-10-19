@@ -1,5 +1,5 @@
 services:
-  setup:
+  init_db:
     build:
       dockerfile: docker/app/Dockerfile
       context: .
@@ -8,10 +8,19 @@ services:
       - DB_PORT=5432
     command: sh -c "
       uv run python manage.py migrate &&
-      uv run python manage.py create_superuser --noinput --username=test --email=test@test.test --password=test --if-not-exists &&
+      uv run python manage.py create_superuser --noinput --username=test --email=test@test.test --password=test --if-not-exists
+      "
+
+  add_test_data:
+    build:
+      dockerfile: docker/app/Dockerfile
+      context: .
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+    command: sh -c "
       uv run python manage.py populate_test_users --amount=100 &&
-      uv run python manage.py populate_test_surveys --amount=100 &&
-      uv run python manage.py populate_test_survey_results --surveys-amount=100
+      uv run python manage.py populate_test_surveys --amount=100
       "
 
   app:

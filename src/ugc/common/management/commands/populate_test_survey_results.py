@@ -1,7 +1,7 @@
 import logging
 import random
 from math import floor
-from typing import Type, TypeVar
+from typing import Type
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -13,27 +13,6 @@ from ugc.common.decorators import gc_collect
 from ugc.surveys.models import Question, Survey, Choice, SurveyResult, SurveyResultChoice
 
 logger = logging.getLogger(__name__)
-
-WORDS = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'lelit']
-
-
-def generate_random_text(min_words_cnt: int = 5, max_words_cnt: int = 15) -> str:
-    words_cnt: int = random.randint(min_words_cnt, max_words_cnt)
-    return ' '.join([WORDS[random.randint(0, len(WORDS) - 1)] for _ in range(words_cnt)])
-
-
-T = TypeVar('T')
-
-
-def generate_entities(min_cnt: int, max_cnt: int, cls: Type[T], **params) -> list[T]:
-    result: list[T] = []
-    cnt: int = random.randint(min_cnt, max_cnt)
-    orders: list[int] = random.sample(range(0, cnt), cnt)
-    for idx, _ in enumerate(range(cnt)):
-        text: str = generate_random_text()
-        entity: T = cls(text=text, order=orders[idx], **params)
-        result.append(entity)
-    return result
 
 
 class Command(BaseCommand):
