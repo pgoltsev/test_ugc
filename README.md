@@ -22,10 +22,12 @@
 
 При первом посещении страниц может понадобиться авторизация, введите имя и пароль `test`.
 
-1. Открываем в браузере:
+1. Схема БД
+   ![db_schema.png](materials/db_schema.png)
+2. Открываем в браузере:
     - [http://localhost:8000/surveys/1/questions/](http://localhost:8000/surveys/1/questions/) - список вопросов для
       опроса c id = 1.
     - [http://localhost:8000/surveys/1/questions/1/](http://localhost:8000/surveys/1/questions/1/) - вопрос с id = 1 для
       опроса с id = 1.
-2. Также опрос можно пройти по ссылке [http://localhost:8000/surveys/1/](http://localhost:8000/surveys/1/). Вместо 1
-   можно подставить любой другой id и пройти другой опрос.
+    - Также опрос можно пройти по ссылке [http://localhost:8000/surveys/1/](http://localhost:8000/surveys/1/). Вместо 1
+      можно подставить любой другой id и пройти другой опрос.
