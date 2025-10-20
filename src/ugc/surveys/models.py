@@ -8,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 
 class Survey(models.Model):
     title = models.TextField(verbose_name=_('заголовок'))
-    uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, db_index=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name=_('автор'))
     first_question = models.ForeignKey('Question', on_delete=models.SET_NULL, null=True, blank=True,
                                        verbose_name=_('первый вопрос'), related_name='first_question')
